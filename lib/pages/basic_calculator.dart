@@ -1,3 +1,4 @@
+import 'package:calculator/modules/buttons.dart';
 import 'package:flutter/material.dart';
 
 // This page will manage the Basic Calculator UI and functionality
@@ -11,138 +12,94 @@ class BasicCalculator extends StatefulWidget {
 }
 
 class _BasicCalculatorState extends State<BasicCalculator> {
-  // store the displayed value
-  String displayText = "0";
-
-  // store the numbers and operator
-  double? firstNumber;
-  String? operator;
-
-  // list of buttons for the calculator
-  final List<String> buttonLabels = [
-    "AC",
-    "DEL",
-    "%",
-    "÷",
-    "7",
-    "8",
-    "9",
-    "x",
-    "4",
-    "5",
-    "6",
-    "-",
-    "1",
-    "2",
-    "3",
-    "+",
-    "N/A",
-    "0",
-    ".",
-    "="
+  // A list of buttons to be displayed on the calculator
+  final List<String> buttons = [
+    'C',
+    'icon_del',
+    '%',
+    '/',
+    '7',
+    '8',
+    '9',
+    'x',
+    '4',
+    '5',
+    '6',
+    '-',
+    '1',
+    '2',
+    '3',
+    '+',
+    'ANS',
+    '0',
+    '.',
+    '=',
   ];
-
-  // method to handle button press
-  void onButtonPressed(String label) {
-    setState(() {
-      if (label == "AC") {
-        // Clear everything
-        displayText = "0";
-        firstNumber = null;
-        operator = null;
-      } else if (label == "DEL") {
-        // Remove the last character
-        displayText = displayText.length > 1
-            ? displayText.substring(0, displayText.length - 1)
-            : "0";
-      } else if (label == "+" || label == "-" || label == "x" || label == "÷") {
-        // Store the first number and the operator
-        firstNumber = double.tryParse(displayText);
-        operator = label;
-        displayText = "0";
-      } else if (label == "=") {
-        // Perform the calculation
-        if (firstNumber != null && operator != null) {
-          double secondNumber = double.tryParse(displayText) ?? 0;
-          if (operator == "+") {
-            displayText = (firstNumber! + secondNumber).toString();
-          } else if (operator == "-") {
-            displayText = (firstNumber! - secondNumber).toString();
-          } else if (operator == "x") {
-            displayText = (firstNumber! * secondNumber).toString();
-          } else if (operator == "÷") {
-            displayText = secondNumber != 0
-                ? (firstNumber! / secondNumber).toString()
-                : "Error"; // Handle division by zero
-          }
-          firstNumber = null; // Reset after calculation
-          operator = null;
-        }
-      } else {
-        // Append the label to the display text
-        if (displayText == "0") {
-          displayText = label;
-        } else {
-          displayText += label;
-        }
-      }
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Basic Calculator"),
-        centerTitle: true,
-        backgroundColor: Colors.deepPurple[300],
-        toolbarHeight: 50,
-      ),
-      backgroundColor: Colors.deepPurple[200],
+      backgroundColor: Colors.black,
       body: Column(
         children: [
-          Container(
-            height: 200,
-            width: double.infinity,
-            color: Colors.black,
-            alignment: Alignment.center,
-            child: Text(
-              displayText,
-              style: const TextStyle(
-                fontSize: 48,
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ),
+          Expanded(child: Container()),
           Expanded(
-              child: Padding(
-            padding: const EdgeInsets.all(8.0),
+            flex: 2,
             child: GridView.builder(
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 4, crossAxisSpacing: 8, mainAxisSpacing: 8),
-                itemCount: 20,
-                itemBuilder: (context, index) {
-                  final label = buttonLabels[index];
-                  return ElevatedButton(
-                      onPressed: () {
-                        // handle button press
-                        onButtonPressed(label);
-                      },
-                      style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.deepPurple[300],
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20),
-                          )),
-                      child: Text(
-                        label,
-                        style: const TextStyle(
-                            fontSize: 20, fontWeight: FontWeight.bold),
-                      ));
-                }),
-          ))
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 4, // Number of columns in the grid
+              ),
+              itemCount: buttons.length, // Total number of items in the grid
+              itemBuilder: (BuildContext context, int index) {
+                return buttons[index] == 'icon_del'
+                    ? MyButton(
+                        icon:
+                            Icons.backspace_outlined, // Use the backspace icon
+                        color: Colors.grey[850],
+                        textColor: Colors.orange,
+                        buttonText: buttons[index],
+                      )
+                    : MyButton(
+                        buttonText: buttons[index],
+                        color: buttons[index] == '='
+                            ? Colors.orange
+                            : isOperator(buttons[index])
+                                ? Colors.grey[850]
+                                : Colors.grey[850],
+                        textColor: isOperator(buttons[index])
+                            ? Colors.orange
+                            : Colors.white,
+                      );
+              },
+            ),
+          )
         ],
       ),
     );
+  }
+
+  bool isOperator(String x) {
+    // Check if the button text is an operator
+    if (x == '+' ||
+        x == '-' ||
+        x == '*' ||
+        x == '/' ||
+        x == '%' ||
+        x == 'DEL' ||
+        x == 'C' ||
+        x == 'x') {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  bool isEqual(String x) {
+    // Check if the button text is equal to '='
+    if (x == '=') {
+      return true;
+    } else {
+      return false;
+    }
   }
 }
