@@ -1,4 +1,5 @@
 import 'package:calculator/modules/buttons.dart';
+import 'package:calculator/modules/nav_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:math_expressions/math_expressions.dart';
 import 'package:calculator/pages/other_tools.dart';
@@ -17,12 +18,6 @@ class _BasicCalculatorState extends State<BasicCalculator> {
   // User data
   String userQuestion = '';
   String userAnswer = '';
-
-  // Current page index for the PageView
-  int currentPage = 0;
-
-  // PageController to manage the PageView
-  final PageController _pageController = PageController(initialPage: 0);
 
   // A list of buttons to be displayed on the calculator
   final List<String> buttons = [
@@ -50,136 +45,109 @@ class _BasicCalculatorState extends State<BasicCalculator> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
+    return PageView(
+      controller: PageController(initialPage: 0),
       children: [
-        // page names
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            GestureDetector(
-              onTap: () {
-                _pageController.jumpToPage(0);
-              },
-              child: Text(
-                'Basic Calculator',
-                style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: currentPage == 0 ? Colors.orange : Colors.white),
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 10),
-        Expanded(
-          child: PageView(
-            controller: PageController(initialPage: 0),
+        // const NavBar(),
+        Scaffold(
+          backgroundColor: Colors.black,
+          body: Column(
             children: [
-              Scaffold(
-                backgroundColor: Colors.black,
-                body: Column(
-                  children: [
-                    Expanded(
-                        child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        const SizedBox(
-                          height: 50,
-                        ),
-                        Container(
-                          padding: const EdgeInsets.all(20),
-                          alignment: Alignment.centerLeft,
-                          child: Text(
-                            userQuestion,
-                            style: const TextStyle(
-                                color: Colors.white, fontSize: 35),
-                          ),
-                        ),
-                        Container(
-                          padding: const EdgeInsets.all(20),
-                          alignment: Alignment.centerRight,
-                          child: Text(
-                            userAnswer,
-                            style: const TextStyle(
-                                color: Colors.white, fontSize: 20),
-                          ),
-                        ),
-                      ],
-                    )),
-                    Expanded(
-                      flex: 2,
-                      child: GridView.builder(
-                        gridDelegate:
-                            const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 4, // Number of columns in the grid
-                        ),
-                        itemCount:
-                            buttons.length, // Total number of items in the grid
-                        itemBuilder: (BuildContext context, int index) {
-                          return buttons[index] == 'icon_del'
-                              ? MyButton(
-                                  // delete last number button
-                                  buttonTapped: () {
-                                    setState(() {
-                                      if (userQuestion.isNotEmpty) {
-                                        userQuestion = userQuestion.substring(
-                                            0, userQuestion.length - 1);
-                                      }
-                                    });
-                                  },
-                                  icon: Icons
-                                      .backspace_outlined, // Use the backspace icon
-                                  color: Colors.grey[850],
-                                  textColor: Colors.orange,
-                                  buttonText: buttons[index],
-                                )
-                              : buttons[index] == 'C'
-                                  ? MyButton(
-                                      // delete everything button
-                                      buttonText: buttons[index],
-                                      color: Colors.grey[850],
-                                      textColor: Colors.orange,
-                                      buttonTapped: () {
-                                        setState(() {
-                                          userQuestion = '';
-                                          userAnswer = '';
-                                        });
-                                      })
-                                  : buttons[index] == '='
-                                      ? MyButton(
-                                          buttonText: buttons[index],
-                                          color: Colors.orange,
-                                          textColor: Colors.white,
-                                          buttonTapped: () {
-                                            setState(() {
-                                              equalPressed();
-                                            });
-                                          })
-                                      : MyButton(
-                                          buttonTapped: () {
-                                            setState(() {
-                                              userQuestion += buttons[index];
-                                            });
-                                          },
-                                          buttonText: buttons[index],
-                                          color: isOperator(buttons[index])
-                                              ? Colors.grey[850]
-                                              : Colors.grey[850],
-                                          textColor: isOperator(buttons[index])
-                                              ? Colors.orange
-                                              : Colors.white,
-                                        );
-                        },
-                      ),
+              Expanded(
+                  child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  const SizedBox(
+                    height: 50,
+                  ),
+                  Container(
+                    padding: const EdgeInsets.all(20),
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      userQuestion,
+                      style: const TextStyle(color: Colors.white, fontSize: 35),
                     ),
-                  ],
+                  ),
+                  Container(
+                    padding: const EdgeInsets.all(20),
+                    alignment: Alignment.centerRight,
+                    child: Text(
+                      userAnswer,
+                      style: const TextStyle(color: Colors.white, fontSize: 20),
+                    ),
+                  ),
+                ],
+              )),
+              Expanded(
+                flex: 2,
+                child: GridView.builder(
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 4, // Number of columns in the grid
+                  ),
+                  itemCount:
+                      buttons.length, // Total number of items in the grid
+                  itemBuilder: (BuildContext context, int index) {
+                    return buttons[index] == 'icon_del'
+                        ? MyButton(
+                            // delete last number button
+                            buttonTapped: () {
+                              setState(() {
+                                if (userQuestion.isNotEmpty) {
+                                  userQuestion = userQuestion.substring(
+                                      0, userQuestion.length - 1);
+                                }
+                              });
+                            },
+                            icon: Icons
+                                .backspace_outlined, // Use the backspace icon
+                            color: Colors.grey[850],
+                            textColor: Colors.orange,
+                            buttonText: buttons[index],
+                          )
+                        : buttons[index] == 'C'
+                            ? MyButton(
+                                // delete everything button
+                                buttonText: buttons[index],
+                                color: Colors.grey[850],
+                                textColor: Colors.orange,
+                                buttonTapped: () {
+                                  setState(() {
+                                    userQuestion = '';
+                                    userAnswer = '';
+                                  });
+                                })
+                            : buttons[index] == '='
+                                ? MyButton(
+                                    buttonText: buttons[index],
+                                    color: Colors.orange,
+                                    textColor: Colors.white,
+                                    buttonTapped: () {
+                                      setState(() {
+                                        equalPressed();
+                                      });
+                                    })
+                                : MyButton(
+                                    buttonTapped: () {
+                                      setState(() {
+                                        userQuestion += buttons[index];
+                                      });
+                                    },
+                                    buttonText: buttons[index],
+                                    color: isOperator(buttons[index])
+                                        ? Colors.grey[850]
+                                        : Colors.grey[850],
+                                    textColor: isOperator(buttons[index])
+                                        ? Colors.orange
+                                        : Colors.white,
+                                  );
+                  },
                 ),
               ),
-              // second page
-              const OtherTools(),
             ],
           ),
         ),
+        // second page
+        const OtherTools(),
       ],
     );
   }
