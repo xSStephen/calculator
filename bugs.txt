@@ -1,0 +1,3 @@
+Bugs to fix:
+1. Disable the operators to crash the app if one of them is placed first.
+2. 

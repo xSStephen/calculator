@@ -1,36 +1,31 @@
 import 'package:flutter/material.dart';
 
-class NavBar extends StatefulWidget {
+class NavBar extends StatelessWidget {
   const NavBar({super.key});
 
   @override
-  State<NavBar> createState() => _NavBarState();
-}
-
-class _NavBarState extends State<NavBar> {
-  @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 16.0),
-      color: Colors.blue, // Background color for the header
+      padding: const EdgeInsets.only(top: 4, bottom: 40),
+      color: Colors.black, // Background color for the header
       child: const Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Text(
             "Calculator",
             style: TextStyle(
-              fontSize: 20,
+              fontSize: 25,
               fontWeight: FontWeight.bold,
-              color: Colors.white,
+              color: Colors.grey,
             ),
           ),
-          SizedBox(width: 10), // Space between the two texts
+          SizedBox(width: 20), // Space between the two texts
           Text(
             "Tools",
             style: TextStyle(
-              fontSize: 20,
+              fontSize: 25,
               fontWeight: FontWeight.bold,
-              color: Colors.white,
+              color: Colors.grey,
             ),
           ),
         ],
