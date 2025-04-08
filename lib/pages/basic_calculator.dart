@@ -50,6 +50,11 @@ class _BasicCalculatorState extends State<BasicCalculator> {
       children: [
         // const NavBar(),
         Scaffold(
+          appBar: AppBar(
+            backgroundColor: Colors.black,
+            elevation: 0,
+            title: const NavBar(),
+          ),
           backgroundColor: Colors.black,
           body: Column(
             children: [

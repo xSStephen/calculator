@@ -15,7 +15,7 @@ class _NavBarState extends State<NavBar> {
       color: Colors.blue, // Background color for the header
       child: const Row(
         mainAxisAlignment: MainAxisAlignment.center,
-        children: const [
+        children: [
           Text(
             "Calculator",
             style: TextStyle(
