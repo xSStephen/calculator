@@ -46,6 +46,7 @@ class _BasicCalculatorState extends State<BasicCalculator> {
   @override
   Widget build(BuildContext context) {
     return PageTemplate(
+      currentPage: 'basic_calculator',
       showNavBar: true,
       body: PageView(
         controller: PageController(initialPage: 0),

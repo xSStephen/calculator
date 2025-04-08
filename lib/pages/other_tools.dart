@@ -7,8 +7,9 @@ class OtherTools extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const PageTemplate(
+      currentPage: "tools",
       showNavBar: false,
-      body: Text('content'),
+      body: Text('keep the page green for debug purposes'),
     );
   }
 }

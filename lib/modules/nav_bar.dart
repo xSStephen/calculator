@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
 
 class NavBar extends StatelessWidget {
-  const NavBar({super.key});
+  final String currentPage; // Add a parameter to track the current page
+
+  const NavBar({super.key, required this.currentPage});
 
   @override
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.only(top: 4, bottom: 40),
       color: Colors.black, // Background color for the header
-      child: const Row(
+      child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Text(
@@ -16,16 +18,18 @@ class NavBar extends StatelessWidget {
             style: TextStyle(
               fontSize: 25,
               fontWeight: FontWeight.bold,
-              color: Colors.grey,
+              color: currentPage == "basic_calculator"
+                  ? Colors.white
+                  : Colors.grey,
             ),
           ),
-          SizedBox(width: 20), // Space between the two texts
+          const SizedBox(width: 20), // Space between the two texts
           Text(
             "Tools",
             style: TextStyle(
               fontSize: 25,
               fontWeight: FontWeight.bold,
-              color: Colors.grey,
+              color: currentPage == "tools" ? Colors.white : Colors.grey,
             ),
           ),
         ],
