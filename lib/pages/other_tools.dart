@@ -6,10 +6,31 @@ class OtherTools extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const PageTemplate(
-      currentPage: "tools",
+    // Define a map of calculator types and their corresponding actions
+    final Map<String, VoidCallback> calculators = {
+      'Basic': () => Navigator.pushNamed(context, '/basicCalculator'),
+      'Scientific': () => Navigator.pushNamed(context, '/scientificCalculator'),
+      'BMI': () => Navigator.pushNamed(context, '/bmiCalculator'),
+      'Currency': () => Navigator.pushNamed(context, '/currencyConverter'),
+    };
+
+    return PageTemplate(
+      currentPageIndex: 1,
       showNavBar: false,
-      body: Text('keep the page green for debug purposes'),
+      body: GridView.builder(
+        gridDelegate:
+            const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2),
+        itemCount: calculators.keys.length,
+        itemBuilder: (context, index) {
+          final calculatorName = calculators.keys.elementAt(index);
+          final onPressed = calculators[calculatorName];
+
+          return ElevatedButton(
+            onPressed: onPressed,
+            child: Text(calculatorName),
+          );
+        },
+      ),
     );
   }
 }

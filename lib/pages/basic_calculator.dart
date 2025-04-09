@@ -19,6 +19,9 @@ class _BasicCalculatorState extends State<BasicCalculator> {
   String userQuestion = '';
   String userAnswer = '';
 
+  // track active page
+  int currentPageIndex = 0;
+
   // A list of buttons to be displayed on the calculator
   final List<String> buttons = [
     'C',
@@ -46,10 +49,15 @@ class _BasicCalculatorState extends State<BasicCalculator> {
   @override
   Widget build(BuildContext context) {
     return PageTemplate(
-      currentPage: 'basic_calculator',
+      currentPageIndex: currentPageIndex,
       showNavBar: true,
       body: PageView(
         controller: PageController(initialPage: 0),
+        onPageChanged: (int index) {
+          setState(() {
+            currentPageIndex = index;
+          });
+        },
         children: [
           Scaffold(
             backgroundColor: Colors.black,
