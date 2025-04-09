@@ -134,6 +134,11 @@ class _BasicCalculatorState extends State<BasicCalculator> {
                                   : MyButton(
                                       buttonTapped: () {
                                         setState(() {
+                                          // Prevent operators as the first character
+                                          if (isOperator(buttons[index]) &&
+                                              userQuestion.isEmpty) {
+                                            return;
+                                          }
                                           userQuestion += buttons[index];
                                         });
                                       },
@@ -184,15 +189,35 @@ class _BasicCalculatorState extends State<BasicCalculator> {
   }
 
   void equalPressed() {
-    //plugin: https://pub.dev/packages/math_expressions/example
-    String finalQuestion = userQuestion;
-    finalQuestion = finalQuestion.replaceAll('x', '*');
+    // Check if the input is empty or starts with an operator
+    if (userQuestion.isEmpty || isOperator(userQuestion[0])) {
+      return;
+    }
 
-    Parser p = Parser();
-    Expression exp = p.parse(finalQuestion);
-    ContextModel cm = ContextModel();
-    double eval = exp.evaluate(EvaluationType.REAL, cm);
+    try {
+      // Replace 'x' with '*' for multiplication
+      String finalQuestion = userQuestion.replaceAll('x', '*');
 
-    userAnswer = eval.toString();
+      // Parse and evaluate the expression
+      Parser p = Parser();
+      Expression exp = p.parse(finalQuestion);
+      ContextModel cm = ContextModel();
+      double eval = exp.evaluate(EvaluationType.REAL, cm);
+
+      // Update the answer
+      setState(() {
+        // Check if the result is a whole number
+        if (eval == eval.toInt()) {
+          userAnswer = eval.toInt().toString(); // Display as an integer
+        } else {
+          userAnswer = eval.toString(); // Display as a double
+        }
+      });
+    } catch (e) {
+      // Handle any parsing or evaluation errors
+      setState(() {
+        userAnswer = "You've forgot the number :(";
+      });
+    }
   }
 }
