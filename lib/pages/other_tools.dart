@@ -8,10 +8,8 @@ class OtherTools extends StatelessWidget {
   Widget build(BuildContext context) {
     // Define a map of calculator types and their corresponding actions
     final Map<String, VoidCallback> calculators = {
-      'Basic': () => Navigator.pushNamed(context, '/basicCalculator'),
-      'Scientific': () => Navigator.pushNamed(context, '/scientificCalculator'),
-      'BMI': () => Navigator.pushNamed(context, '/bmiCalculator'),
-      'Currency': () => Navigator.pushNamed(context, '/currencyConverter'),
+      'Currency': () =>
+          Navigator.pushNamed(context, '/tools/currency_calculator'),
     };
 
     return PageTemplate(

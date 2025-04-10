@@ -1,3 +1,5 @@
 Bugs to fix:
-1. Disable the operators to crash the app if one of them is placed first.
-2. 
+1. [FIXED]Disable the operators to crash the app if one of them is placed first.
+2. Allow only one operator.
+3. Missing onPress option for the PageView between calculator and tools.
+4. 

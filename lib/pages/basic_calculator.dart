@@ -224,7 +224,7 @@ class _BasicCalculatorState extends State<BasicCalculator> {
     } catch (e) {
       // Handle any parsing or evaluation errors
       setState(() {
-        userAnswer = "You've forgot the number :(";
+        userAnswer = "Oh no";
       });
     }
   }
