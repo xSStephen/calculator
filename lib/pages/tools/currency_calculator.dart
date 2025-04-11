@@ -1,7 +1,9 @@
+import 'package:calculator/modules/calculator_buttons.dart';
 import 'package:calculator/modules/page_template.dart';
-import 'package:calculator/modules/buttons.dart';
-import 'package:math_expressions/math_expressions.dart';
 import 'package:flutter/material.dart';
+import 'package:math_expressions/math_expressions.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 
 class CurrencyCalculator extends StatefulWidget {
   const CurrencyCalculator({super.key});
@@ -53,6 +55,53 @@ class _CurrencyCalculatorState extends State<CurrencyCalculator> {
   String selectedCurrency1 = 'USD';
   String selectedCurrency2 = 'EUR';
 
+  Map<String, double> exchangeRates = {};
+
+  @override
+  void initState() {
+    super.initState();
+    print('initState called'); // Debug print
+    fetchExchangeRates();
+  }
+
+  Future<void> fetchExchangeRates() async {
+    const String apiKey =
+        'ed704da1f87eefccd9f741cb'; // Replace with your API key
+    const String apiUrl =
+        'https://v6.exchangerate-api.com/v6/$apiKey/latest/USD';
+
+    try {
+      final response = await http.get(Uri.parse(apiUrl));
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        print('API Response: $data'); // Debug print to log the API response
+
+        setState(() {
+          // Convert all values in conversion_rates to double
+          exchangeRates = (data['conversion_rates'] as Map<String, dynamic>)
+              .map((key, value) => MapEntry(key, value.toDouble()));
+          print(
+              'Exchange Rates Map: $exchangeRates'); // Debug print to log the map
+        });
+      } else {
+        print('Failed to fetch exchange rates: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error fetching exchange rates: $e');
+    }
+  }
+
+  double convertCurrency(String from, String to, double amount) {
+    if (exchangeRates.isEmpty ||
+        !exchangeRates.containsKey(from) ||
+        !exchangeRates.containsKey(to)) {
+      return 0.0;
+    }
+    double fromRate = exchangeRates[from]!;
+    double toRate = exchangeRates[to]!;
+    return (amount / fromRate) * toRate;
+  }
+
   @override
   Widget build(BuildContext context) {
     return PageTemplate(
@@ -103,10 +152,14 @@ class _CurrencyCalculatorState extends State<CurrencyCalculator> {
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
                                 children: [
-                                  Text(
-                                    currency[
-                                        'name']!, // Full name of the currency
-                                    style: const TextStyle(color: Colors.white),
+                                  Padding(
+                                    padding: const EdgeInsets.only(right: 8.0),
+                                    child: Text(
+                                      currency[
+                                          'name']!, // Full name of the currency
+                                      style:
+                                          const TextStyle(color: Colors.white),
+                                    ),
                                   ),
                                   Text(
                                     currency[
@@ -129,7 +182,7 @@ class _CurrencyCalculatorState extends State<CurrencyCalculator> {
                     // First row, second column: User input
                     Expanded(
                       child: Container(
-                        color: Colors.blue,
+                        color: Colors.black,
                         alignment: Alignment.center,
                         child: Text(
                           userQuestion,
@@ -149,11 +202,11 @@ class _CurrencyCalculatorState extends State<CurrencyCalculator> {
                     // Second row, first column: Dropdown for selecting currencies
                     Expanded(
                       child: Container(
-                        color: Colors.orange,
+                        color: Colors.black,
                         alignment: Alignment.center,
                         child: DropdownButton<String>(
                           value: selectedCurrency2,
-                          dropdownColor: Colors.orange,
+                          dropdownColor: Colors.grey,
                           style: const TextStyle(color: Colors.white),
                           items: currencies.map((currency) {
                             return DropdownMenuItem<String>(
@@ -163,10 +216,14 @@ class _CurrencyCalculatorState extends State<CurrencyCalculator> {
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
                                 children: [
-                                  Text(
-                                    currency[
-                                        'name']!, // Full name of the currency
-                                    style: const TextStyle(color: Colors.white),
+                                  Padding(
+                                    padding: const EdgeInsets.only(right: 8.0),
+                                    child: Text(
+                                      currency[
+                                          'name']!, // Full name of the currency
+                                      style:
+                                          const TextStyle(color: Colors.white),
+                                    ),
                                   ),
                                   Text(
                                     currency[
@@ -189,7 +246,7 @@ class _CurrencyCalculatorState extends State<CurrencyCalculator> {
                     // Second row, second column: Converted value
                     Expanded(
                       child: Container(
-                        color: Colors.purple,
+                        color: Colors.black,
                         alignment: Alignment.center,
                         child: Text(
                           userAnswer,
@@ -206,75 +263,51 @@ class _CurrencyCalculatorState extends State<CurrencyCalculator> {
               // Buttons section
               Container(
                 color: Colors.black, // Background color for the buttons section
-                padding: const EdgeInsets.all(10), // Add some padding
-                child: GridView.builder(
-                  shrinkWrap: true, // Prevents GridView from expanding
-                  physics:
-                      const NeverScrollableScrollPhysics(), // Disable scrolling
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 4, // Number of columns in the grid
-                  ),
-                  itemCount:
-                      buttons.length, // Total number of items in the grid
-                  itemBuilder: (BuildContext context, int index) {
-                    return buttons[index] == 'icon_del'
-                        ? MyButton(
-                            buttonTapped: () {
-                              setState(() {
-                                if (userQuestion.isNotEmpty) {
-                                  userQuestion = userQuestion.substring(
-                                      0, userQuestion.length - 1);
-                                }
-                              });
-                            },
-                            icon: Icons.backspace_outlined,
-                            color: Colors.grey[850],
-                            textColor: Colors.orange,
-                            buttonText: buttons[index],
-                          )
-                        : buttons[index] == 'C'
-                            ? MyButton(
-                                buttonText: buttons[index],
-                                color: Colors.grey[850],
-                                textColor: Colors.orange,
-                                buttonTapped: () {
-                                  setState(() {
-                                    userQuestion = '';
-                                    userAnswer = '';
-                                  });
-                                },
-                              )
-                            : buttons[index] == '='
-                                ? MyButton(
-                                    buttonText: buttons[index],
-                                    color: Colors.orange,
-                                    textColor: Colors.white,
-                                    buttonTapped: () {
-                                      setState(() {
-                                        equalPressed();
-                                      });
-                                    },
-                                  )
-                                : MyButton(
-                                    buttonTapped: () {
-                                      setState(() {
-                                        if (isOperator(buttons[index]) &&
-                                            userQuestion.isEmpty) {
-                                          return;
-                                        }
-                                        userQuestion += buttons[index];
-                                      });
-                                    },
-                                    buttonText: buttons[index],
-                                    color: isOperator(buttons[index])
-                                        ? Colors.grey[850]
-                                        : Colors.grey[850],
-                                    textColor: isOperator(buttons[index])
-                                        ? Colors.orange
-                                        : Colors.white,
-                                  );
-                  },
-                ),
+                padding: const EdgeInsets.all(10),
+                child: CalculatorButtons(
+                    buttons: buttons,
+                    userQuestion: userQuestion,
+                    onButtonPressed: (String buttonText) {
+                      setState(() {
+                        userQuestion += buttonText;
+                      });
+                    },
+                    onClearPressed: () {
+                      setState(() {
+                        userQuestion = '';
+                        userAnswer = '';
+                      });
+                    },
+                    onEqualPressed: () async {
+                      if (userQuestion.isNotEmpty) {
+                        try {
+                          // Check if exchangeRates is empty and fetch if necessary
+                          if (exchangeRates.isEmpty) {
+                            await fetchExchangeRates();
+                          }
+
+                          double amount = double.parse(userQuestion);
+                          double convertedValue = convertCurrency(
+                              selectedCurrency1, selectedCurrency2, amount);
+
+                          setState(() {
+                            userAnswer = convertedValue.toStringAsFixed(2);
+                          });
+                        } catch (e) {
+                          setState(() {
+                            userAnswer = "Invalid input";
+                          });
+                        }
+                      }
+                    },
+                    onDeletePressed: () {
+                      setState(() {
+                        if (userQuestion.isNotEmpty) {
+                          userQuestion = userQuestion.substring(
+                              0, userQuestion.length - 1);
+                        }
+                      });
+                    }),
               ),
             ],
           ),
@@ -284,59 +317,31 @@ class _CurrencyCalculatorState extends State<CurrencyCalculator> {
   }
 
   bool isOperator(String x) {
-    // Check if the button text is an operator
-    if (x == '+' ||
-        x == '-' ||
-        x == '*' ||
-        x == '/' ||
-        x == '%' ||
-        x == 'DEL' ||
-        x == 'x') {
-      return true;
-    } else {
-      return false;
-    }
+    return ['+', '-', '*', '/', '%', 'DEL', 'x'].contains(x);
   }
 
-  bool isEqual(String x) {
-    // Check if the button text is equal to '='
-    if (x == '=') {
-      return true;
-    } else {
-      return false;
-    }
-  }
-
-  void equalPressed() {
-    // Check if the input is empty or starts with an operator
+  void equalPressed({
+    required String userQuestion,
+    required Function(String) updateAnswer,
+  }) {
     if (userQuestion.isEmpty || isOperator(userQuestion[0])) {
       return;
     }
 
     try {
-      // Replace 'x' with '*' for multiplication
       String finalQuestion = userQuestion.replaceAll('x', '*');
-
-      // Parse and evaluate the expression
       Parser p = Parser();
       Expression exp = p.parse(finalQuestion);
       ContextModel cm = ContextModel();
       double eval = exp.evaluate(EvaluationType.REAL, cm);
 
-      // Update the answer
-      setState(() {
-        // Check if the result is a whole number
-        if (eval == eval.toInt()) {
-          userAnswer = eval.toInt().toString(); // Display as an integer
-        } else {
-          userAnswer = eval.toString(); // Display as a double
-        }
-      });
+      if (eval == eval.toInt()) {
+        updateAnswer(eval.toInt().toString());
+      } else {
+        updateAnswer(eval.toString());
+      }
     } catch (e) {
-      // Handle any parsing or evaluation errors
-      setState(() {
-        userAnswer = "Oh no";
-      });
+      updateAnswer("Oh no");
     }
   }
 }
